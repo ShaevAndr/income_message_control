@@ -2,6 +2,15 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
   var CustomWidget = function () {
     var self = this;
 
+	this.getUsers = () => {
+		const users_object = AMOCRM.constant("managers")
+		let users_list = []
+		for (const user in users_object){
+			users_list.push(users_object[user])
+		}
+		return users_list
+	}
+
     this.getTemplate = _.bind(function (template, params, callback) {
       params = (typeof params == 'object') ? params : {};
       template = template || '';
@@ -94,84 +103,130 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
           console.log('tasks');
         }
       },
-      advancedSettings:function () {
+      advancedSettings:async function () {
         console.log("advsetting")
-        var $work_area = $('#list_page_holder'),
-          $save_button = $(
-            Twig({ref: '/tmpl/controls/button.twig'}).render({
-              text: 'Сохраaaaнить',
-              class_name: 'button-input_blue button-input-disabled js-button-save-' + self.get_settings().widget_code,
-              additional_data: ''
-            })
-          ),
-          $cancel_button = $(
-            Twig({ref: '/tmpl/controls/cancel_button.twig'}).render({
-              text: 'Отмена',
-              class_name: 'button-input-disabled js-button-cancel-' + self.get_settings().widget_code,
-              additional_data: ''
-            })
-          );
+        var $work_area = $('#list_page_holder')
+		const managers = self.getUsers()
 
-        console.log('advancedSettings');
+		const $choice_user_or_department = $(
+			Twig({ref:'/tmpl/controls/select.twig'}).render({
+				name:"Выбор пользователя / отдела",
+				items: managers,
+				id: "choice_manager",
+				title: "Выбор пользователя / отдела",
+				additional_data: ''
+			}));
 
-        $save_button.prop('disabled', true);
-        $('.content__top__preset').css({float: 'left'});
-        $('.list__body-right__top').css({display: 'block'})
-          .append('<div class="list__body-right__top__buttons"></div>');
-        $('.list__body-right__top__buttons').css({float: 'right'})
-          .append($cancel_button)
-          .append($save_button);
+		const $time_input = $(
+			  Twig({ref:'/tmpl/controls/input.twig'}).render({
+			    placeholder: "Введите время ожидания в минутах",
+			    id: "delay_time",
+			    class_name: "my-5"
+			  })
+			);
+			
+			
+		const $select_actions = $(
+			  Twig({ref:'/tmpl/controls/checkboxes_dropdown.twig'}).render({
+			    name: "Выбер действий",
+			    items: [{option:'Задача', name:"task", id:1, value:1, data_value: 1}, 
+			    {option:'Тег', name:"tag", id:2, value:2, data_value: 2}, 
+			    {option:'Смена ответственного', name:"responsible", id:3, value:3, data_value: 3}, 
+			    {option:'Уведомление в Telegram', name:"notice", id:4, value:4, data_value: 4}],
+			    id:"actions_1"
+			  })
+			);
+		$work_area.append($choice_user_or_department)
+		$work_area.append($time_input)
+		$work_area.append($select_actions)
+		
+        
+		
+		// let data = ''
+        // const url = "https://c1df-5-165-177-183.eu.ngrok.io"
+
+        // data = await $.ajax({
+		// 	url: "https://d8d8-5-165-177-183.eu.ngrok.io/",
+		// 	context: document.body,
+		// 		headers: {"ngrok-skip-browser-warning":"drgf",
+		// 				 "User-Agent":"ne mozila"}
+		// 	}).done(function(page) {
+		// 	return page;
+		// 	});
+		
+		// $work_area.append(data);
+        // const id = $("#select_manager")
+        // id.on("change", () => {console.log(id.val())})
+          
+
+        //   $save_button = $(
+        //     Twig({ref: '/tmpl/controls/button.twig'}).render({
+        //       text: 'Сохраaaaнить',
+        //       class_name: 'button-input_blue button-input-disabled js-button-save-' + self.get_settings().widget_code,
+        //       additional_data: ''
+        //     })
+        //   ),
+        //   $cancel_button = $(
+        //     Twig({ref: '/tmpl/controls/cancel_button.twig'}).render({
+        //       text: 'Отмена',
+        //       class_name: 'button-input-disabled js-button-cancel-' + self.get_settings().widget_code,
+        //       additional_data: ''
+        //     })
+        //   );
+
+        // console.log('advancedSettings');
+
+        // $save_button.prop('disabled', true);
+        // $('.content__top__preset').css({float: 'left'});
+        // $('.list__body-right__top').css({display: 'block'})
+        //   .append('<div class="list__body-right__top__buttons"></div>');
+        // $('.list__body-right__top__buttons').css({float: 'right'})
+        //   .append($cancel_button)
+        //   .append($save_button);
 
         
 
-        self.getTemplate('advanced_settings', {}, function (template) {
-          var $page = $(
-            template.render({title: self.i18n('advanced').title, widget_code: self.get_settings().widget_code})
-          );
+        // self.getTemplate('advanced_settings', {}, function (template) {
+        //   var $page = $(
+        //     template.render({title: self.i18n('advanced').title, widget_code: self.get_settings().widget_code})
+        //   );
         
-        $choice_user_or_department = $(
-          Twig({ref:'/tmpl/controls/select.twig'}).render({
-            name:"Выбор пользователя / отдела",
-            items: [{option:'Иванов'}, {option:'Петров'}, {option:'Сидоров'}, {option:'Маск'}],
-            id: "custom_widget_id",
-            title: "Выбор пользователя / отдела",
-            additional_data: ''
-          })
-        );
-        $time_input = $(
-          Twig({ref:'/tmpl/controls/input.twig'}).render({
-            placeholder: "Введите время ожидания в минутах",
-            id: "delay_time",
-            additional_data: ''
-          })
-        );
+        // 
+        // );
+        // $time_input = $(
+        //   Twig({ref:'/tmpl/controls/input.twig'}).render({
+        //     placeholder: "Введите время ожидания в минутах",
+        //     id: "delay_time",
+        //     additional_data: ''
+        //   })
+        // );
 
-        $select_actions = $(
-          Twig({ref:'/tmpl/controls/checkboxes_dropdown.twig'}).render({
-            name: "Выбер действий",
-            items: [{option:'Иванов', name:"Ivan", id:1}, 
-            {option:'Петров', name:"NeIvan", id:2}, 
-            {option:'Сидоров', name:"Cidr", id:3}, 
-            {option:'Маск', name:"Ilon", id:4}],
-            additional_data: ''
-          })
-        );
+        // $select_actions = $(
+        //   Twig({ref:'/tmpl/controls/checkboxes_dropdown.twig'}).render({
+        //     name: "Выбер действий",
+        //     items: [{option:'Иванов', name:"Ivan", id:1}, 
+        //     {option:'Петров', name:"NeIvan", id:2}, 
+        //     {option:'Сидоров', name:"Cidr", id:3}, 
+        //     {option:'Маск', name:"Ilon", id:4}],
+        //     additional_data: ''
+        //   })
+        // );
 
-        $end_of_task = $(
-          Twig({ref:'/tmpl/controls/date_field.twig'}).render({
-            placeholder: "Введите время ожидания в минутах",
-            id: "task_date",
-            additional_data: '',
-            placeholder: "Со сроком выполнения: в момент события"
-          })
-        );
+        // $end_of_task = $(
+        //   Twig({ref:'/tmpl/controls/date_field.twig'}).render({
+        //     placeholder: "Введите время ожидания в минутах",
+        //     id: "task_date",
+        //     additional_data: '',
+        //     placeholder: "Со сроком выполнения: в момент события"
+        //   })
+        // );
 
-          $work_area.append($page);
-          $work_area.append($choice_user_or_department);
-          $work_area.append($time_input);
-          $work_area.append($select_actions);
-          $work_area.append($end_of_task);
-        });
+        //   $work_area.append($page);
+        //   $work_area.append($choice_user_or_department);
+        //   $work_area.append($time_input);
+        //   $work_area.append($select_actions);
+        //   $work_area.append($end_of_task);
+        // });
       },
 
       /**
