@@ -1,0 +1,18 @@
+#delay_time {
+    margin: 20px 0px;
+    width: 100%;
+}
+
+#list_page_holder{
+    width: 75%;
+}
+
+.control--select, .checkboxes_dropdown{
+    margin: 30px 0;
+}
+
+.text-input-textarea {
+    margin: 30px 0;
+    width: 100%;
+    height: 40px;
+}

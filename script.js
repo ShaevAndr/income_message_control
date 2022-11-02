@@ -1,3 +1,12 @@
+
+const loadCSS = (settings, fileName) => {
+    const { path, version } = settings;
+    const linkTag = `<link href="${path}/${fileName}?v=${version}" type="text/css" rel="stylesheet">`
+
+    document.querySelector('head').insertAdjacentHTML('beforeend', linkTag)
+}
+
+
 define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
   var CustomWidget = function () {
     var self = this;
@@ -25,7 +34,7 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
 
     this.callbacks = {
       render: function () {
-        console.log('render');
+        
         return true;
       },
       init: _.bind(function () {
@@ -102,59 +111,83 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
         selected: function () {
           console.log('tasks');
         }
-      },
-      advancedSettings:async function () {
-        console.log("advsetting")
-        var $work_area = $('#list_page_holder')
+	},
+	advancedSettings:async function () {
+		var $work_area = $('#list_page_holder')
+		const settings = self.get_settings()
+		loadCSS(settings, 'style.css')
+		let data = ''
+    	data = await $.ajax({
+			url: "https://0a59-77-95-90-50.eu.ngrok.io",
+			context: document.body,
+			headers: {"ngrok-skip-browser-warning":"drgf",
+				 "User-Agent":"ne mozila"}
+		}).done(function(page) {
+			return page;
+		});
+		
+		$work_area.append(data);
+		
+		const element_visible_control = (element, is_visible)=>{
+			if (!element) {
+				return
+			}
+			console.log(element, is_visible)
+			is_visible ? element.show() : element.hide()
+		}
+
 		const managers = self.getUsers()
+		
+		const $choice_user_or_department = $("#choice_manager")
+		const $time_input = $("#delay_time")
+		const $select_actions = $("#actions_1")
+		// const $choice_user_or_department = $(
+		// 	Twig({ref:'/tmpl/controls/select.twig'}).render({
+		// 		name:"Выбор пользователя / отдела",
+		// 		items: managers,
+		// 		id: "choice_manager",
+		// 		title: "Выбор пользователя / отдела",
+		// 		additional_data: '',
+		// 	}));
 
-		const $choice_user_or_department = $(
-			Twig({ref:'/tmpl/controls/select.twig'}).render({
-				name:"Выбор пользователя / отдела",
-				items: managers,
-				id: "choice_manager",
-				title: "Выбор пользователя / отдела",
-				additional_data: ''
-			}));
-
-		const $time_input = $(
-			  Twig({ref:'/tmpl/controls/input.twig'}).render({
-			    placeholder: "Введите время ожидания в минутах",
-			    id: "delay_time",
-			    class_name: "my-5"
-			  })
-			);
+		// const $time_input = $(
+		// 	  Twig({ref:'/tmpl/controls/input.twig'}).render({
+		// 	    placeholder: "Введите время ожидания в минутах",
+		// 	    id: "delay_time",
+		// 	  })
+		// 	);
 			
 			
-		const $select_actions = $(
-			  Twig({ref:'/tmpl/controls/checkboxes_dropdown.twig'}).render({
-			    name: "Выбер действий",
-			    items: [{option:'Задача', name:"task", id:1, value:1, data_value: 1}, 
-			    {option:'Тег', name:"tag", id:2, value:2, data_value: 2}, 
-			    {option:'Смена ответственного', name:"responsible", id:3, value:3, data_value: 3}, 
-			    {option:'Уведомление в Telegram', name:"notice", id:4, value:4, data_value: 4}],
-			    id:"actions_1"
-			  })
-			);
-		$work_area.append($choice_user_or_department)
-		$work_area.append($time_input)
-		$work_area.append($select_actions)
+		// const $select_actions = $(
+		// 	  Twig({ref:'/tmpl/controls/checkboxes_dropdown.twig'}).render({
+		// 	    name: "Выбер действий",
+		// 	    items: [{option:'Задача', name:"task", id:1, value:1, data_value: 1}, 
+		// 	    {option:'Тег', name:"tag", id:2, value:2, data_value: 2}, 
+		// 	    {option:'Смена ответственного', name:"responsible", id:3, value:3, data_value: 3}, 
+		// 	    {option:'Уведомление в Telegram', name:"notice", id:4, value:4, data_value: 4}],
+		// 	    id:"actions_1"
+		// 	  })
+		// 	);
+	
+			
 		
-        
-		
-		// let data = ''
-        // const url = "https://c1df-5-165-177-183.eu.ngrok.io"
 
-        // data = await $.ajax({
-		// 	url: "https://d8d8-5-165-177-183.eu.ngrok.io/",
-		// 	context: document.body,
-		// 		headers: {"ngrok-skip-browser-warning":"drgf",
-		// 				 "User-Agent":"ne mozila"}
-		// 	}).done(function(page) {
-		// 	return page;
-		// 	});
-		
-		// $work_area.append(data);
+	
+
+    const $block_of_settings_1 = {
+		$block_choice_1_1: $("#task_settings_1"),
+    	$block_choice_1_2: $("#tag_settings_1"),
+    	$block_choice_1_3: $("#change_responsible_1"),
+    	$block_choice_1_4: $("#notice_1")
+		}
+
+	const $control_of_settings_1 = $select_actions.find('[type=checkbox]')
+	
+	$control_of_settings_1.on("change", event=>{
+		element_visible_control(
+			$block_of_settings_1[`$block_choice_1_${event.currentTarget.value}`], 
+			event.currentTarget.checked)
+		})
         // const id = $("#select_manager")
         // id.on("change", () => {console.log(id.val())})
           
