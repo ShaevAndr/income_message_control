@@ -118,7 +118,7 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
 		loadCSS(settings, 'style.css')
 		let data = ''
     	data = await $.ajax({
-			url: "https://0a59-77-95-90-50.eu.ngrok.io",
+			url: "https://86db-5-165-177-183.eu.ngrok.io",
 			context: document.body,
 			headers: {"ngrok-skip-browser-warning":"drgf",
 				 "User-Agent":"ne mozila"}
@@ -133,7 +133,7 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
 				return
 			}
 			console.log(element, is_visible)
-			is_visible ? element.show() : element.hide()
+			is_visible ? element.slideDown(500) : element.slideUp(500)
 		}
 
 		const managers = self.getUsers()
