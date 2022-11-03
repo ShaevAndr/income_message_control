@@ -15,6 +15,7 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
 		const users_object = AMOCRM.constant("managers")
 		let users_list = []
 		for (const user in users_object){
+			users_object[user].bg_color = 'white'
 			users_list.push(users_object[user])
 		}
 		return users_list
@@ -113,30 +114,42 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
         }
 	},
 	advancedSettings:async function () {
+    const managers = self.getUsers()
 		var $work_area = $('#list_page_holder')
 		const settings = self.get_settings()
 		loadCSS(settings, 'style.css')
 		let data = ''
-    	data = await $.ajax({
-			url: "https://86db-5-165-177-183.eu.ngrok.io",
-			context: document.body,
-			headers: {"ngrok-skip-browser-warning":"drgf",
-				 "User-Agent":"ne mozila"}
-		}).done(function(page) {
-			return page;
-		});
-		
+      data = await fetch("https://d820-77-95-90-50.eu.ngrok.io/post",
+        {method: "POST",
+		headers: {
+			'Content-Type': 'application/json',
+			"ngrok-skip-browser-warning":"drgf",
+			"User-Agent":"ne mozila"
+		  },
+		body: JSON.stringify(managers)
+        }).then(page => {return page.text()})
+
+    // 	data = await $.ajax({
+    //   dataType: 'json',
+    //   type:"POST",
+    //   data: managers,
+	// 		url: "https://d820-77-95-90-50.eu.ngrok.io/post",
+	// 		headers: {"ngrok-skip-browser-warning":"drgf",
+	// 			 "User-Agent":"ne mozila"}
+	// 	}).done(function(page) {
+	// 		return page;
+	// 	});
+
 		$work_area.append(data);
 		
 		const element_visible_control = (element, is_visible)=>{
 			if (!element) {
 				return
 			}
-			console.log(element, is_visible)
 			is_visible ? element.slideDown(500) : element.slideUp(500)
 		}
 
-		const managers = self.getUsers()
+		
 		
 		const $choice_user_or_department = $("#choice_manager")
 		const $time_input = $("#delay_time")
