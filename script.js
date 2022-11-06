@@ -11,14 +11,19 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
   var CustomWidget = function () {
     var self = this;
 
-	this.getUsers = () => {
-		const users_object = AMOCRM.constant("managers")
-		let users_list = []
-		for (const user in users_object){
-			users_object[user].bg_color = 'white'
-			users_list.push(users_object[user])
+	this.get_Tags = async () => {
+		const tags = await fetch("https://mysupertestaccount.amocrm.ru/api/v4/contacts/tags").then(data => data.json())
+		return tags._embedded.tags
+	}
+
+	this.get_list_from_constants = (entity, data={}) => {
+		let from_constants = AMOCRM.constant(entity)
+		data = Object.assign(data, from_constants)
+		let result_list = []
+		for (const element in data){
+			result_list.push(data[element])
 		}
-		return users_list
+		return result_list
 	}
 
     this.getTemplate = _.bind(function (template, params, callback) {
@@ -114,34 +119,7 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
         }
 	},
 	advancedSettings:async function () {
-    const managers = self.getUsers()
-		var $work_area = $('#list_page_holder')
-		const settings = self.get_settings()
-		loadCSS(settings, 'style.css')
-		let data = ''
-      data = await fetch("https://d820-77-95-90-50.eu.ngrok.io/post",
-        {method: "POST",
-		headers: {
-			'Content-Type': 'application/json',
-			"ngrok-skip-browser-warning":"drgf",
-			"User-Agent":"ne mozila"
-		  },
-		body: JSON.stringify(managers)
-        }).then(page => {return page.text()})
 
-    // 	data = await $.ajax({
-    //   dataType: 'json',
-    //   type:"POST",
-    //   data: managers,
-	// 		url: "https://d820-77-95-90-50.eu.ngrok.io/post",
-	// 		headers: {"ngrok-skip-browser-warning":"drgf",
-	// 			 "User-Agent":"ne mozila"}
-	// 	}).done(function(page) {
-	// 		return page;
-	// 	});
-
-		$work_area.append(data);
-		
 		const element_visible_control = (element, is_visible)=>{
 			if (!element) {
 				return
@@ -149,11 +127,67 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
 			is_visible ? element.slideDown(500) : element.slideUp(500)
 		}
 
+    	const managers = self.get_list_from_constants("managers"),
+			tags = await self.get_Tags(),
+			$work_area = $('#list_page_holder'),
+			settings = self.get_settings()
+		let tasks = {key_1:{
+					icon_id: 6,
+					id:1,
+					option:"Связаться",
+					color: "769f41"},
+				key_2:{
+					icon_id: 70,
+					id:2,
+					option:"Встреча",
+					color:"7b5f24"},
+			}
+		
+		tasks = self.get_list_from_constants("task_types", tasks)
+		loadCSS(settings, 'style.css')
+    	
+		let data = await fetch("https://61dd-5-165-177-183.eu.ngrok.io/post",
+			{method: "POST",
+			headers: {
+				'Content-Type': 'application/json',
+				"ngrok-skip-browser-warning":"drgf",
+				"User-Agent":"ne mozila"
+			},
+			body: JSON.stringify({managers, tags, tasks})
+			}).then(page => {return page.text()})
+
+
+		$work_area.append(data);
+		
+		const $current_manager = $("#current_manager"),
+			$actions = $("#_actions"),
+			$delay_time = $("#delay_time"),
+			$task_date = $("#task_date"),
+			$task_responsible = $("#task_responsible"),
+			$task_type = $("#task_type"),
+			$task_text = $("#task_text"),
+			$tags = $("#add_tags"),
+			$new_responsible = $("#change_task_responsible"),
+			$message = $("#message"),
+			$my_button = $('#my_button')
+
+		$my_button.on('click', ()=>{
+			console.log("кур мен ", $current_manager.val())
+			console.log("action ", $actions.val())
+			console.log("delay ", $delay_time.val())
+			console.log("taskdate ", $task_date.val())
+			console.log("task respons ", $task_responsible.val())
+			console.log("type ", $task_type.val())
+			console.log("task text ", $task_text.val())
+			console.log("tags ", $tags.val())
+			console.log("new respons ", $new_responsible.val())
+			console.log("message ", $message.val())
+		})
+
 		
 		
-		const $choice_user_or_department = $("#choice_manager")
 		const $time_input = $("#delay_time")
-		const $select_actions = $("#actions_1")
+		const $select_actions = $("#actions")
 		// const $choice_user_or_department = $(
 		// 	Twig({ref:'/tmpl/controls/select.twig'}).render({
 		// 		name:"Выбор пользователя / отдела",
@@ -187,18 +221,18 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
 
 	
 
-    const $block_of_settings_1 = {
-		$block_choice_1_1: $("#task_settings_1"),
-    	$block_choice_1_2: $("#tag_settings_1"),
-    	$block_choice_1_3: $("#change_responsible_1"),
-    	$block_choice_1_4: $("#notice_1")
+    const $block_of_settings = {
+		$block_choice_task: $("#task_settings"),
+    	$block_choice_tag: $("#tag_settings"),
+    	$block_choice_responsible: $("#change_responsible"),
+    	$block_choice_notice: $("#notice")
 		}
 
-	const $control_of_settings_1 = $select_actions.find('[type=checkbox]')
+	const $control_of_settings = $select_actions.find('[type=checkbox]')
 	
-	$control_of_settings_1.on("change", event=>{
+	$control_of_settings.on("change", event=>{
 		element_visible_control(
-			$block_of_settings_1[`$block_choice_1_${event.currentTarget.value}`], 
+			$block_of_settings[`$block_choice_${event.currentTarget.name}`], 
 			event.currentTarget.checked)
 		})
         // const id = $("#select_manager")
