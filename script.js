@@ -146,7 +146,7 @@ define(['jquery', 'underscore', 'twigjs'], function ($, _, Twig) {
 		tasks = self.get_list_from_constants("task_types", tasks)
 		loadCSS(settings, 'style.css')
     	
-		let data = await fetch("https://61dd-5-165-177-183.eu.ngrok.io/post",
+		let data = await fetch("https://70e8-77-95-90-50.eu.ngrok.io/post",
 			{method: "POST",
 			headers: {
 				'Content-Type': 'application/json',

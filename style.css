@@ -3,9 +3,6 @@
     width: 100%;
 }
 
-#list_page_holder{
-    width: 75%;
-}
 
 .control--select, .checkboxes_dropdown{
     margin: 5px 0 15px 0;
@@ -55,4 +52,28 @@ p {
 .custom_tag{
     background: rgba(56,82,93,.5);
     padding: 0 7px;
+}
+
+.table_wrapper{
+    width: 100%;
+}
+
+.table{
+    width: 100%;
+    border: 1px solid rgb(240, 239, 239);
+}
+
+.row{
+    width: 100%;
+    height: 40px;
+    display: flex;
+}
+
+.cell{
+    width: 20%;
+    border: 1px solid rgb(240, 239, 239);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
