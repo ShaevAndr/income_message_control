@@ -1,0 +1,50 @@
+{"widget": 
+    {"name": "widget.name",
+    "description": "widget.description", 
+    "short_description": "widget.short_description", 
+    "version": "3.1.1", "interface_version": 2, 
+    "init_once": "Y", 
+    "locale": ["ru"], 
+    "installation": true, 
+    "support": 
+        {
+            "link": "https://reon.pro/message_control",
+            "email": "reon.helpdesk@gmail.com"
+        }
+    }, 
+    "locations": ["settings", "advanced_settings"], 
+    "tour": 
+        {
+        "is_tour": true,
+        "tour_images":
+            {
+            "ru": ["/images/logo_main.png", "/images/logo_main.png", "/images/logo_main.png"]
+            }, 
+            "tour_description": "widget.tour_description"
+        }, 
+    "settings": 
+        {
+        "client_name": 
+            {
+            "name": "settings.client_name", 
+            "type": "text", 
+            "required": true
+            }, 
+        "phone_number": 
+            {
+            "name": "settings.phone_number", 
+            "type": "text", 
+            "required": true
+            }, 
+        "terms_of_use": 
+            {
+            "name": "settings.terms_of_use", 
+            "type": "text", 
+            "required": true
+            }
+        }, 
+    "advanced": 
+        {
+        "title": "advanced.title"
+        }
+}

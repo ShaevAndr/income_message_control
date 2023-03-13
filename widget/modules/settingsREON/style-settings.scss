@@ -1,0 +1,353 @@
+$color-blue: rgb(76, 139, 247);
+$reon-paid: #A0BF44;
+$reon-not-paid: #f37575;
+$color-text: #565555;
+$color-border: #e5e5e5;
+
+.reon_widget_ai_visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    white-space: nowrap;
+    clip-path: inset(100%);
+    clip: rect(0 0 0 0);
+    overflow: hidden;
+}
+.reon_widget_ai_modal-text-paid {
+    color: $reon-paid;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.reon_widget_ai_modal-text-notpaid {
+    color: $reon-not-paid;
+    font-weight: 700;
+    font-size: 16px;
+}
+.reon_widget_settings {
+    display: flex;
+    flex-direction: column;
+    color: $color-text;
+
+    &-row {
+        padding: 5px 0 10px 0;
+    }
+
+    &-label {
+        font-weight: 700;
+    }
+
+    &-warning {
+        color: $reon-not-paid;
+        font-size: 12px;
+        padding: 5px 0 0 0;
+        font-weight: 700;
+    }
+
+    &-nav {
+        display: flex;
+        border-bottom: 1px solid #ccc;
+
+        &-item {
+            width: 100%;
+            text-transform: uppercase;
+            text-align: center;
+            padding: 12px 0;
+            cursor: pointer;
+            position: relative;
+            background: #fff;
+            color: #92989B;
+            transition: all 0.1s ease-in-out;
+            border-bottom: 3px solid rgba(0, 0, 0, 0);
+
+            &-span {
+                font-size: 16px;
+                color: inherit;
+            }
+        }
+
+        &-active {
+            border-color: $color-blue;
+            color: $color-blue;
+            font-weight: 700;
+        }
+    }
+
+    &-body {
+        &-item {
+            padding: 20px 0 0 0;
+
+            &-show {
+                display: block !important;
+            }
+
+            &-hide {
+                display: none !important;
+            }
+        }
+    }
+
+    &-access {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid $color-border;
+        border-radius: 3px;
+        & .reon_widget_ai_list-search {
+            position: relative;
+            display: flex;
+            padding: 8px;
+            &-input-clear {
+                position: absolute;
+                right: 0;
+                width: 0;
+                height: 0;
+            }
+            &-input-icon {
+                margin: 0 8px 0 3px;
+            }
+            &-input {
+                font-size: 16px;
+                width: 100%;
+                padding: 6px 6px 4px 3px;
+                line-height: 18px;
+                border-bottom: 2px solid rgba(0, 0, 0, 0);
+            
+                &:focus {
+                    border-color: #2798d5;
+                }
+            }
+        }
+        &-filter {
+            padding: 5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            position: relative;
+            font-size: 14px;
+            z-index: 40;
+            white-space: nowrap;
+            &-current {
+                cursor: default;
+            }
+            &-list {
+                position: absolute;
+                background-color: #fff;
+                border: 1px solid $color-border;
+                left: -5px;
+                border-radius: 3px;
+                display: none;
+                max-width: 130px;
+                overflow-x: hidden;
+                max-height: 200px;
+                overflow-y: auto;
+                &-item {
+                    padding: 2px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    &:not(.reon_widget_settings-access-filter-list-item-active):hover {
+                        background: #f5f5f5;
+                    }
+                    &-active {
+                        background-color: #ddd;
+                    }
+                }
+            }
+        }
+
+        &-body {
+            max-height: 190px;
+            overflow-y: scroll;
+
+            &> :not(:last-child) {
+                border-bottom: 1px solid #e5e5e5;
+            }
+        }
+
+        &-heading {
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #aaa;
+            font-size: 14px;
+            border-bottom: 1px solid $color-border;
+            height: 50px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 7fr 5fr 5fr;
+            align-items: center;
+
+            & .reon_widget_settings-access-name {
+                border-right: 1px solid $color-border;
+            }
+
+            & .reon_widget_ai_list-search {
+                padding: 0 10px 0 0 !important;
+                width: 100% !important;
+            }
+            & .reon_widget_settings-access-group {
+                border-right: 1px solid $color-border;
+                white-space: nowrap;
+                height: 100%;
+                padding: 0 10px;
+            }
+            & .reon_widget_ai_list-search-input {
+                font-weight: 400 !important;
+            }
+        }
+        &-row {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 14fr 10fr 9fr;
+            align-items: center;
+
+            &-flex {
+                display: flex !important;
+            }
+
+            &-hide {
+                display: none !important;
+            }
+        }
+
+        &-name {
+            padding: 10px 0 10px 10px;
+            display: flex;
+            align-items: center;
+        }
+        &-group {
+            padding: 10px 0 10px 10px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        &-check {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            border-left: 1px solid rgba(0, 0, 0, 0);
+        }
+    }
+
+    &-forwardToContact {
+        padding: 10px;
+        border: 1px solid #dedee0;
+        color: #737373;
+        font-size: 14px;
+        margin-bottom: 5px;
+        border-radius: 4px;
+
+        & span {
+            width: 100%;
+            text-align: center;
+            display: block;
+
+            & a {
+                color: #4d85e6;
+            }
+        }
+    }
+
+    &-price {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0 0 10px 0;
+
+        &-body {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            margin: 10px 0 15px 0;
+
+            &>:not(:last-child) {
+                margin: 0 0 5px 0;
+            }
+        }
+
+        &-item {
+            width: 100%;
+            border-radius: 3px;
+            padding: 10px 0;
+            background: #f7f7f7;
+            cursor: pointer;
+
+            &:hover:not(.reon_widget_settings-price-item-active) {
+                background: #f1f1f1;
+            }
+
+            &-active {
+                background: #4d85e6;
+                color: #ececec;
+            }
+
+            &-title {
+                font-size: 14px;
+                margin: 0 0 5px 0;
+                padding: 0 10px;
+            }
+
+            &-body {
+                display: flex;
+                justify-content: space-between;
+                padding: 0 10px;
+            }
+        }
+
+        &-period {
+            font-size: 17px;
+        }
+
+        &-value {
+            font-size: 15px;
+        }
+    }
+
+    &-footer {
+        padding: 15px 0 17px 0;
+        background-color: #2b3538;
+        color: #ececec;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        box-shadow: 0 0 5px rgb(0 0 0 / 50%);
+
+        &-text {
+            text-align: center;
+        }
+
+        &-contacts {
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            align-items: center;
+
+            &-item {
+                & a {
+                    color: inherit;
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+
+                & img {
+                    max-width: 95px;
+                    margin: 6px 0 0 0;
+                }
+            }
+        }
+
+        &-relative {
+            position: relative !important;
+            padding-bottom: 120px;
+        }
+    }
+}

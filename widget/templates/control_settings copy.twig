@@ -1,0 +1,553 @@
+<div class="reon-msgctrl_date_table_wrapper" >
+	<table style="width:100%;">
+<div>
+<table class="w-100">
+{# table title #}
+	<tr align="left">
+		<th>ВЫБОР ПОЛЬЗОВАТЕЛЯ/ОТДЕЛА</th>
+
+		<th>минут без ответа</th>
+		
+		<th>Действие по наступлению условия</th>
+
+		<th style="min-width:280px">Параметры действия</th>
+		
+		<th>Настройки</th>
+	</tr>
+
+{# Table body #}
+<tr align="left" id="add_settings_row" style="display:none;">
+    <td>
+        <div id="choice_manager" class="w-100">
+            {% include "/templates/select.twig" with {
+                name:"choice_manager",
+                items: managers_with_groups,
+                id: "current_manager",
+                title: "Выбор пользователя / отдела",
+                additional_data: '',
+                class_name: "w-100 reon-msgctrl_bg-white"
+            } %}
+        </div>
+    </td>
+
+    <td>
+        <div class="w-100">
+            {% include "/templates/input.twig" with {
+                placeholder: "Введите время ожидания",
+                id: "delay_time",
+                class_name: "w-100 js-control-allow-numeric-negative",
+				type: "number"
+            } %}
+        </div>
+    </td>
+
+    <td>
+        <div id="actions" class="w-100">
+            {% include "/templates/checkboxes_dropdown.twig" with {
+                name: "actions_choice",
+                items: [{option:'Задача',  id:"task", value:"task", is_checked:true}, 
+                    {option:'Тег', id:"tag", value:"tag"}, 
+                    {option:'Смена ответственного', id:"responsible", value:"responsible"}, 
+                    {option:'Уведомление в Telegram', id:"notice", value:"notice"}],
+                id:"_actions",
+                class_name: "w-100"
+            } %}
+
+        </div>			
+    </td>
+
+    <td>
+            {# Первая выборка (постановка новой задачии) #}
+            <div id="task_settings"  class="align_center">
+                
+                <span class="title">Добавить задачу</span>
+                    
+					{% include "/templates/select.twig" with {
+                        class_name: 'w-100',
+                        id: "task_date",
+                        additional_data: '',
+						items: [{option:'В момент события',  id:"inMoment", value:"inMoment"}, 
+							{option:'Конец дня', id:"today", value:"today", is_checked:true}, 
+							{option:'Через день', id:"afterDay", value:"afterDay"}, 
+							{option:'Через три дня', id:"3DayLater", value:"3DayLater"},
+							{option:'В течении недели', id:"forWeek", value:"forWeek"}],
+                        placeholder: "Со сроком выполнения: в момент события"
+                    } %}
+                    {% include "/templates/select.twig" with {
+                        class_name: 'w-100',
+                        id: "task_responsible",
+                        title: "Выбор пользователя / отдела",
+                        items: managers
+                    } %}
+                    {% include "/templates/task_select.twig" with {
+                        class_name: 'w-100',
+                        id: "task_type",
+                        title: "Типа задачи",
+                        items: tasks
+                    } %}
+                    {% include "/templates/textarea.twig" with {
+                        class_name: 'w-100',
+                        id: "task_text",
+                        placeholder: "Введите текст задачи"
+                    } %}
+                </div>
+
+            {# Вторая выборка (тег) #}
+            <div id="tag_settings" style="display: none;" class="align_center">
+            <span class="reon-msgctrl_title">Добавить тэг</span>
+                    {% include "/templates/checkboxes_dropdown/tag_drop_checkbox.twig" with {
+                        id: "add_tags",
+                        title: "Добавить тэг",
+                        items: tags,
+                        class_name: 'w-100'
+                    } %}
+            </div>
+
+            {# Третья выборка (смена ответственного) #}
+            <div id="change_responsible" style="display: none;" class="align_center">
+                <span class="reon-msgctrl_title">Сменить ответственного</span>
+                    {% include "/templates/select.twig" with {
+                        class_name: 'w-100',
+                        id: "change_task_responsible",
+                        title: "Выбор пользователя / отдела",
+                        items: managers
+
+                    } %}
+            </div>
+
+            {# четвёртая выборка (отправка уведомления в телеграм) #}
+            <div id="notice" style="display: none;" class="align_center">
+                <span class="reon-msgctrl_title">Отправить сообщение</span>
+                    {% include "/templates/textarea.twig" with {
+                        class_name: 'w-100',
+                        id: "message",
+                        placeholder: "Введите сообщение в телеграмм"
+                    } %}
+                
+            </div>
+    </td>
+
+    <td>
+        <button id="save_control_setting" type="button" class="button-input button-input_blue button-input_add button-input_add-todo content-table__name-link w-100" tabindex="" ><span class="button-input-inner__text w-100">Сохранить</span></button>
+    	<br>
+		<button data-action="cancel" data-id="add_setting" type="button" class="button-input button-input_add w-100" tabindex=""><span class="button-input-inner__text w-100" data-action="cancel" data-id="add_setting" >Отменить</span></button>
+	</td>
+</tr>
+	{# {% include '/templates/add_condition.twig' with {
+		select_manager: managers_with_groups,
+        tags: tags,
+        tasks: tasks,
+	} %} #}
+
+	{% for line in message_control %}
+		
+		{% set actions_array = [] %}
+		{% for action in line.action_type %}
+			{% if action.is_checked %}
+				{% set actions_array = actions_array|merge([action.value]) %}
+			{% endif %}
+		{% endfor %}
+	{# Режим отображения информации #}
+			<tr align="left" id="view_row_{{line._id}}">
+				<td>
+					{{line.manager.option}}
+				</td>
+					
+				<td>
+					{{line.delay_time}}
+				</td>
+				
+				
+				<td>
+				{% for action in line.action_type %}
+					{% if action.is_checked %}
+						{% include '/templates/action_tag.twig' with {
+							action: action,
+							id: line._id
+						} %}
+					{% endif %}
+				{% endfor %}
+				</td>
+				
+				<td>		
+					<div class="changes reon-msgctrl_flex-column reon-msgctrl_align-start reon-msgctrl_jc-start" 
+						id="task_info_{{line._id}}"
+						{% if actions_array[0] != "task" %} style="display:none;" {% endif %}>
+							{% if line.task.date == "inMoment" %}
+								{% set taskDate = "На сейчас" %}
+							{% elseif line.task.date == "today" %}
+								{% set taskDate = "На сегодня" %}
+							{% elseif line.task.date == "afterDay" %}
+								{% set taskDate = "На следующий день" %}
+							{% elseif line.task.date == "3DayLater" %}
+								{% set taskDate = "Сроком на три дня" %}
+							{% elseif line.task.date == "forWeek" %}
+								{% set taskDate = "На неделю" %}
+							{% endif %}
+							<span class="reon-msgctrl_head_title">Поставить задачу на дату: </span>
+							<span>{{taskDate}}</span>
+							<span class="reon-msgctrl_head_title">Поставить задачу для: </span>
+							<span>{{line.task.responsible.option}}</span>
+							<span class="reon-msgctrl_head_title">Тип задачи: </span>
+							<span>{{line.task.type.option}}</span>
+							<span class="reon-msgctrl_head_title">Текст задачи: </span>
+							<span>{{line.task.text}}</span>
+					</div>
+						
+					<div class="changes reon-msgctrl_flex-column reon-msgctrl_align-start reon-msgctrl_jc-start" 
+						id="tag_info_{{line._id}}"
+						{% if actions_array[0] != "tag" %} style="display:none;" {% endif %}>
+							<span class="reon-msgctrl_head_title">Присвоены тэги:</span>
+							{% for tag in line.tags %}
+								{% if tag.is_checked %}
+								{% include '/templates/tag.twig' with {
+									id: tag.id,
+									name: tag.name
+								} %}
+								{% endif %}
+							{% endfor %}						
+					</div>
+						
+					<div class="changes reon-msgctrl_flex-column reon-msgctrl_align-start reon-msgctrl_jc-start" 
+						id="responsible_info_{{line._id}}"
+						{% if actions_array[0] != "responsible" %} style="display:none;" {% endif %}>
+						<span class="reon-msgctrl_head_title">Сменить ответственного на:</span>
+						<span>{{line.new_responsible.option}}</span>
+					</div>
+
+					<div class="changes reon-msgctrl_flex-column reon-msgctrl_align-start reon-msgctrl_jc-start" 
+						id="notice_info_{{line._id}}"
+						{% if actions_array[0] != "notice" %} style="display:none;" {% endif %}>
+						<span class="reon-msgctrl_head_title">Сообщение:</span>
+						<span>{{line.notice}}</span>
+					</div>
+				</td>
+
+				<td>
+					<div class="reon-msgctrl_flex-column reon-msgctrl_align-center reon-msgctrl_jc-center">
+						<span data-action="change" class="reon-msgctrl_edit" data-id={{line._id}}>изменить</span>
+						<span data-action="delete" class="reon-msgctrl_delete" data-id={{line._id}}>удалить</span>
+					</div>
+				</td>	
+			</tr>
+
+
+			{# Блок редактирования #}
+			<tr id="edit_row_{{line._id}}" align="left" style="display:none;">
+				<td>
+					<div id="choice_manager_{{line._id}}" class="w-100">
+						{% include "/templates/select.twig" with {
+							selected: line.manager.id,                
+							name:"choice_manager",
+							items: managers_with_groups,
+							id: "current_manager_" ~ line._id, 
+							title: "Выбор пользователя / отдела",
+							additional_data: '',
+							class_name: "w-100 reon-msgctrl_bg-white"
+						} %}
+					</div>
+				</td>
+
+				<td>
+					<div class="w-100">
+						{% include "/templates/input.twig" with {
+							placeholder: "Введите время ожидания",
+							id: "delay_time_" ~ line._id,
+							class_name: "w-100 js-control-allow-numeric-negative",
+							value: line.delay_time,
+							type: "number"
+						} %}
+					</div>
+				</td>
+
+				<td>
+					<div id="actions_{{line._id}}" data-id="{{line._id}}" class="w-100">
+						{% include "/templates/checkboxes_dropdown.twig" with {
+							name: "actions_choice",
+							items: line.action_type
+						} %}
+
+					</div>			
+				</td>
+
+				<td>
+						{# Первая выборка (постановка новой задачии) #}
+						{% if "task" in actions_array %}
+							<div id="task_settings_{{line._id}}"  class="align_center" >
+								<span class="reon-msgctrl_head_title">Поставить задачу</span>
+								{% include "/templates/select.twig" with {
+									items: [{option:'В момент события',  id:"inMoment", value:"inMoment"}, 
+										{option:'Конец дня', id:"today", value:"today"}, 
+										{option:'Через день', id:"afterDay", value:"afterDay"}, 
+										{option:'Через три дня', id:"3DayLater", value:"3DayLater"},
+										{option:'В течении недели', id:"forWeek", value:"forWeek"}],
+									selected: line.task.date,
+									class_name: 'w-100',
+									id: "task_date_" ~ line._id,
+									additional_data: '',
+									placeholder: "Со сроком выполнения: в момент события"
+								} %}
+								{% include "/templates/select.twig" with {
+									class_name: 'w-100',
+									id: "task_responsible_" ~ line._id,
+									title: "Выбор пользователя / отдела",
+									items: managers,
+									selected: line.task.responsible.id
+								} %}
+								{% include "/templates/task_select.twig" with {
+									class_name: 'w-100',
+									id: "task_type_" ~ line._id,
+									title: "Типа задачи",
+									items: tasks,
+									selected: line.task.type.id
+								} %}
+								{% include "/templates/textarea.twig" with {
+									class_name: 'w-100',
+									id: "task_text_" ~ line._id,
+									placeholder: "Введите текст задачи",
+									value: line.task.text
+								} %}
+							</div>
+						{% else %}
+							<div id="task_settings_{{line._id}}"  class="align_center" style="display:none;" >
+								<span class="reon-msgctrl_head_title">Поставить задачу</span>
+								{% include "/templates/select.twig" with {
+									class_name: 'w-100',
+									additional_data: '',
+									items: [{option:'В момент события',  id:"inMoment", value:"inMoment"}, 
+										{option:'Конец дня', id:"today", value:"today"}, 
+										{option:'Через день', id:"afterDay", value:"afterDay"}, 
+										{option:'Через три дня', id:"3DayLater", value:"3DayLater"},
+										{option:'В течении недели', id:"forWeek", value:"forWeek"}],
+									placeholder: "Со сроком выполнения: в момент события",
+									id: "task_date_" ~ line._id,
+									placeholder: "Со сроком выполнения: в момент события"
+								} %}
+								{% include "/templates/select.twig" with {
+									class_name: 'w-100',
+									id: "task_responsible_" ~ line._id,
+									title: "Выбор пользователя / отдела",
+									items: managers,
+								} %}
+								{% include "/templates/task_select.twig" with {
+									class_name: 'w-100',
+									id: "task_type_" ~ line._id,
+									title: "Типа задачи",
+									items: tasks,
+								} %}
+								{% include "/templates/textarea.twig" with {
+									class_name: 'w-100',
+									id: "task_text_" ~ line._id,
+									placeholder: "Введите текст задачи",
+								} %}
+							</div>						
+						{% endif %}
+						
+
+						{# Вторая выборка (тег) #}
+							<div id="tag_settings_{{line._id}}"  class="align_center" {% if "tag" not in actions_array %} style="display:none;" {% endif %}>
+								<span class="reon-msgctrl_head_title">Добавить тэг</span>
+								{% include "/templates/checkboxes_dropdown/tag_drop_checkbox.twig" with {
+									id: "add_tags_" ~ line._id,
+									title: "Добавить тэг",
+									items: line.tags ? line.tags : tags,
+									class_name: 'w-100'
+								} %}
+							</div>
+
+						{# Третья выборка (смена ответственного) #}
+						{% if "responsible" in actions_array %}
+							<div id="change_responsible_{{line._id}}" class="align_center"  >
+								<span class="reon-msgctrl_head_title">Сменить ответственного</span>
+								{% include "/templates/select.twig" with {
+									class_name: 'w-100',
+									id: "change_task_responsible_" ~ line._id,
+									title: "Выбор пользователя / отдела",
+									items: managers,
+									selected: line.new_responsible.id
+								} %}
+							</div>
+						{% else %}
+							<div id="change_responsible_{{line._id}}" class="align_center"  style="display:none;" >
+								<span class="reon-msgctrl_head_title">Сменить ответственного</span>
+								{% include "/templates/select.twig" with {
+									class_name: 'w-100',
+									id: "change_task_responsible_" ~ line._id,
+									title: "Выбор пользователя / отдела",
+									items: managers,
+								} %}
+							</div>
+						{% endif %}
+
+						{# четвёртая выборка (отправка уведомления в телеграм) #}
+						{% if "notice" in actions_array %}
+							<div id="notice_{{line._id}}" class="align_center">
+								<span class="reon-msgctrl_head_title">Отправить сообщение в телеграм</span>
+								{% include "/templates/textarea.twig" with {
+									class_name: 'w-100',
+									id: "message_" ~ line._id,
+									placeholder: "Введите сообщение в телеграмм",
+									value: line.notice
+								} %}
+							</div>
+						{% else %}
+							<div id="notice_{{line._id}}" class="align_center"  style="display:none;">
+								<span class="reon-msgctrl_head_title">Отправить сообщение в телеграм</span>
+								{% include "/templates/textarea.twig" with {
+									class_name: 'w-100',
+									id: "message_" ~ line._id,
+									placeholder: "Введите сообщение в телеграмм",
+								} %}
+							</div>
+						{% endif %}
+						</td>
+
+						<td align="center">
+							<div class="reon-msgctrl_flex-column reon-msgctrl_align-center reon-msgctrl_jc-start">
+								<button data-action="save"  data-id="{{line._id}}" type="button" class=" button-input button-input_blue button-input_add reon-msgctrl_save_changes_button w-100"  tabindex=""><span class="button-input-inner__text w-100"  data-action="save"  data-id="{{line._id}}">Сохранить</span></button>
+								<br>
+								<button data-action="cancel" data-id="{{line._id}}" type="button" class="button-input button-input_add w-100" tabindex=""><span class="button-input-inner__text w-100" data-action="cancel" data-id="{{line._id}}" >Отменить</span></button>
+								{# <button data-action="cancel" data-id="{{line._id}}" type="button" class="button-input button-cancel button-input_red button-input_add cancel_button w-100" tabindex=""><span class="button-input-inner__text w-100" data-action="cancel" data-id="{{line._id}}" >Отменить</span></button> #}
+							</div>
+						</td>			
+				</tr>
+	{% endfor %}
+	
+	
+</table>
+
+{% include '/templates/user_select.twig' with {
+							items: managers_with_groups,
+							id: 1,
+						} %}
+
+<style type="text/css">
+#delay_time {
+    width: 100%;
+}
+
+td{
+	vertical-align: top;
+	box-sizing: border-box;
+    padding: 15px;
+	background: white; 
+	border: 1px solid rgb(240, 239, 239);
+	border-radius: 3px;
+}
+
+th {
+	box-sizing: border-box;
+    padding: 10px;
+	background: white; 
+	font-family: 'PT Sans Caption','Arial Black',sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 19px;
+	color: rgb(182,189,201);
+	border: 1px solid rgb(240, 239, 239);
+
+}
+
+.reon-msgctrl_title{
+	margin-bottom: 30px;
+	padding: 10px;
+	font-family: 'PT Sans Caption','Arial Black',sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 19px;
+	color: rgb(182,189,201);
+}
+
+.reon-msgctrl_flex-column {
+	display: flex;
+	flex-direction: column;
+}
+
+.reon-msgctrl_align-center{
+	align-items: center;
+}
+.reon-msgctrl_align-start{
+	align-items: flex-start;
+}
+
+.reon-msgctrl_jc-center{
+	justify-content: center;
+}
+.reon-msgctrl_jc-start{
+	justify-content: start;
+}
+
+p {
+    font: inherit;
+    font-size: inherit;
+}
+
+.reon-msgctrl_date_table_wrapper{
+    width: 100%;
+}
+
+.reon-msgctrl_save_changes_button {
+	margin: 10px
+}
+
+.reon-msgctrl_edit, .reon-msgctrl_delete{
+	margin: 5px;
+	color: blue;
+	cursor: pointer;
+}
+
+.w-100{
+	width: 100%;
+	margin-bottom: 15px;
+}
+.reon-msgctrl_head_title{
+	font-family: 'PT Sans Caption','Arial Black',sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 19px;
+	color: rgb(182,189,201);
+}
+
+.reon-msgctrl_custom_tag{
+	height:100%;
+    background: rgba(56,82,93,.5);
+    padding: 0 7px;
+}
+
+.reon-msgctrl_tag_wrapper {
+	height: 24px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    border: 1px solid #38525d;
+    position: relative;
+    border-radius: 3px;
+    width: fit-content;
+}
+
+.reon-msgctrl_pointer {
+	cursor: pointer; 
+}
+
+.reon-msgctrl_bg-white {
+	background: white; 
+}
+
+
+  </style>
+
+
+
+
+
+
+

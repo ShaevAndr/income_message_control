@@ -1,0 +1,19 @@
+<div>
+<p class="reon-msgctrl_head_title">Рассписание:</p>
+{% for day in days %}
+    {% if day.checked %}
+    <div class="reon_schedule_day_demo">
+        <span>{{day.name}}:</span>
+        <span>{{day.from}} - {{day.to}}</span>
+    </div>
+    {% endif  %}
+{% endfor %}
+</div>
+
+<style>
+    .reon_schedule_day_demo{
+        display: flex;
+        justify-content: space-between;
+        margin: 7px 0px;
+    }
+</style>

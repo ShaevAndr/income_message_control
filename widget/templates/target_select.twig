@@ -1,0 +1,99 @@
+<div class="reon__target_select_wrapper" id="reon__target_select{{id}}">
+   
+        <div class="reon__select_target">
+            <span class="reon__target_description">{{ description}}</span>
+            <label class="reon__switcher {% if checked %} reon__switcher__on {% else %} reon__switcher__off {% endif %}" id="">
+            <input id="{{id}}" type="checkbox" value="Y" data-target="{{option}}" class="reon__switcher__checkbox" {% if checked %} checked {% endif %}>
+            </label>
+        </div>
+
+</div>
+
+<style>
+    .reon__target_select_wrapper{
+        width: 100%;
+        box-sizing: border-box;
+        padding: 5px;
+    }
+    .reon__select_target{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 5px 0px;
+        width: 100%;
+    }
+    .reon__switcher_wrapper{
+    color: #2e3640;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    vertical-align: baseline;
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+    height: 1px;
+    margin-top: 3px;}
+
+.reon__switcher{
+    color: #2e3640;
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    vertical-align: baseline;
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 28px;
+    position: relative;
+    border: 0;
+    background: #516570;
+    height: 1px;
+    width: 23px;
+    overflow: visible;
+    {# top: -4px; #}
+}
+
+.reon__switcher__checkbox{
+        margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    vertical-align: baseline;
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+    user-select: text;
+    outline: 0;
+    line-height: 20px;
+    display: none;
+}
+
+.reon__switcher:before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border-radius: 26px;
+    background: #fff;
+    position: absolute;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 10%);
+}
+
+.reon__switcher__off:before{
+    left:-1px;
+    top: -7px;
+}
+
+.reon__switcher__on:before{
+    background: #4c8bf7;
+    right:-1px;
+    top: -7px;
+}
+
+.reon__target_description{
+    font: inherit;
+    color: #131420;
+    font-size: 14px;
+    margin-right: 17px;
+}
+
+</style>

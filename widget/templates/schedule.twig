@@ -1,0 +1,179 @@
+{% if id is empty %}
+    {% set id="" %}
+{% else %}
+    {% set id = "_" ~ id %}
+{% endif %}
+
+<div class="reon_schedule_wrapper" id="reon__schedule_wrapper{{id}}">
+    <input type="checkbox" id="reon_schedule_is_edit{{id}}" class="reon_schedule_is_edit" hidden>
+    <div class="reon_edit_schedule_button ">
+        <span class="reon_edit_schedule">Редактировать расписание</span>
+    </div>
+    <div class="reon_schedule_content" id="reon_schedule_content{{id}}" style="display:none;">
+        <span class="icon icon-modal-close reon__close_schedule_content"></span>
+        <h2 class="reon_title">Расписание работы</h2>
+        {% for day in days %}
+
+            {% if day.from is empty %}
+                {% set day_from = "" %}
+            {% else %}
+                {% set day_from = day.from %}
+            {% endif %}
+
+            {% if day.to is empty %}
+                {% set day_to = "" %}
+            {% else %}
+                {% set day_to = day.to %}
+            {% endif %}
+
+            <div class="reon_schedule_day" data-day="{{day.day}}" data-name="{{day.name}}">
+                {% include 'templates/checkbox.twig' with {
+                    checked: day.checked,
+                    value: day.checked,
+                    input_class_name: 'reon_day_choice',
+                    } 
+                %}
+
+                <div class="reon_day_tag {% if day.checked %} reon_enabled_day {% else %} reon_disabled_day {% endif %}">
+                    <span class="reon_day_text">{{day.name}}</span>
+                </div>
+                <div>
+                    <input class="reon_time_input_from " data-current-value="{{day_from}}" data-day="{{day.day}}" type="time" value="{{day_from}}" {% if day.checked == false %} disabled {% endif %}>
+                    <span>&nbsp; - &nbsp; </span>
+                    <input class="reon_time_input_to" data-current-value="{{day_to}}" data-day="{{day.day}}" value="{{day_to}}" type="time" {% if day.checked == false %} disabled {% endif %}>
+                </div>
+
+            </div>
+            <br style="width: 100%;">
+        {% endfor %}
+        <div class="reon_save_schedule_button reon_disable_save_button" data-active="N">Сохранить изменения</div>
+    </div>
+</div>
+
+<style>
+    .reon_disabled_day{
+        background:rgba(255, 0, 0 , 0.3);
+    }
+    .reon_enabled_day{
+        background: #86C0FC;
+    }
+    .reon_title{
+    font-family: 'PT Sans Caption','Arial Black',sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 19px;
+    margin-bottom: 20px;
+    }
+
+    .reon_schedule_wrapper{
+        position: relative
+    }
+
+    .reon_edit_schedule_button{
+        width: 200px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dbdedf;
+        border-radius: 3px;
+        background: #fcfcfc;
+        justify-content: center;
+        box-sizing: border-box;
+        padding: 5px;
+        cursor: pointer;
+    }
+
+    .reon_schedule_content{
+        flex-direction: column;
+        background: white;
+        z-index: 1000;
+        margin-top: 20px;
+        position: absolute;
+        border: 1px solid #dbdedf;
+        width: 468px;
+        box-shadow: 0 14px 24px 1px rgb(0 0 0 / 10%);
+        max-height: 580px;
+        box-sizing: border-box;
+        padding: 30px;
+        left: 0;
+        top: 20px;
+    }
+
+    .reon_schedule_day {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .reon_day_text{
+        font-size: 16px;
+    }
+
+    .reon_time_input_from, .reon_time_input_to {
+        width: 80px;
+        height:30px;
+        border-radius: 3px;
+        font: inherit;
+        font-size: 14px;
+        box-sizing: border-box;
+        padding: 5px;
+        border: 1px solid #dbdedf;
+    }
+
+    .reon_day_tag{
+        margin-left: -50px;
+        box-sizing: border-box;
+        padding: 4px;
+        height: 40px;
+        width: 130px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dbdedf;
+        border-radius: 3px;
+    }
+
+    .reon_save_schedule_button{
+        height: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid transparent;
+        border-radius: 3px;
+        color: #fff;
+        width: fit-content;
+        padding: 7px;
+        margin-left: 0px;
+        align-self: flex-end;
+        cursor: pointer;
+
+    }
+
+    .reon_disable_save_button{
+        border-color: #b3b6bd;
+        background: #b3b6bd;
+    }
+
+    .reon_enable_save_button{
+        border-color: #4c8bf7;
+        background: #4c8bf7;
+    }
+
+    .reon__close_schedule_content{
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        cursor: pointer;
+    }
+
+</style>
+
+
+
+    
+
+

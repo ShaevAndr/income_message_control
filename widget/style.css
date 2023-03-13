@@ -1,0 +1,79 @@
+#delay_time {
+    margin: 5px 0 15px 0;
+    width: 100%;
+}
+
+
+.control--select, .checkboxes_dropdown{
+    margin: 5px 0 15px 0;
+}
+
+#task_text, #message {
+    margin: 5px 0 15px 0;
+    width: 100%;
+    height: 120px;
+}
+
+.align_center {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    box-shadow: 0px 0px 5px gray;
+}
+
+.inner_wrapper {
+    margin: 20px 0;
+    width: 90%;
+    height: 90%;
+}
+
+p {
+    font: inherit;
+    font-size: inherit;
+}
+
+.date_field_wrapper  {
+    width: 50%;
+    margin: 5px 0 15px 0;
+}
+
+.tag_wrapper {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    border: 1px solid #38525d;
+    position: relative;
+    border-radius: 3px;
+    width: fit-content;
+}
+
+.custom_tag{
+    background: rgba(56,82,93,.5);
+    padding: 0 7px;
+}
+
+.table_wrapper{
+    width: 100%;
+}
+
+.table{
+    width: 100%;
+    border: 1px solid rgb(240, 239, 239);
+}
+
+.row{
+    width: 100%;
+    height: 40px;
+    display: flex;
+}
+
+.cell{
+    width: 20%;
+    border: 1px solid rgb(240, 239, 239);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

@@ -1,0 +1,242 @@
+{% if id is empty %}
+    {% set id="" %}
+{% else %}
+{% set id = "_" ~ id %}
+{% endif %}
+
+
+<div class="reon-msgctrl__tag_select_wrapper" id="reon-msgctrl__tag_select_wrapper{{id}}">
+    <input type="checkbox" class="reon-msgctrl__tag_select_checkbox hidden" name="reon-msgctrl__tag_select_checkbox" id="reon-msgctrl__manager_select_checkbox{{id}}" hidden >
+    <div class="reon-msgctrl__selected_tags" id="reon-msgctrl__selected_tags{{id}}"> 
+        {% for item in selected_tags %}
+        <div class="reon-msgctrl__tag_wrapper">
+            <div class="reon-msgctrl__tag" data-tag-id={{item.id}} {% if item.color %} style="background:{{item.color}}" {% else %} style="background:rgba(56,82,93,.5);" {% endif %}>
+                <span>{{item.name}}</span>   
+            </div>
+                <svg class="svg-icon svg-common--trash-dims reon__delete_tag">
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#common--trash"></use>
+                </svg>
+        </div>
+        {% endfor %}
+            {% include "/templates/target_select.twig" with {
+      
+            option:"contact", 
+            description:"Установить тег на контакт", 
+            id: 'tag_on_contact' ~ id,
+            checked: tag_on_contact
+            }
+        %}
+        {% include "/templates/target_select.twig" with {
+            option:"company", 
+            description:"Установить тег на компанию", 
+            id: 'tag_on_company' ~ id,
+            checked: tag_on_company
+            }
+        %}
+    </div>
+
+    <div class="reon-msgctrl__open_tag_select" data-id={{id}}>Добавить теги</div>
+    
+    <div class="reon-msgctrl__tag_select_block" id="reon-msgctrl__tag_select_block{{id}}" style="display: none;">
+        <span class="icon icon-modal-close reon__close_select_tag"></span>
+
+        <span class="reon-msgctrl__tag_select_block_title">Добавить теги</span>
+
+        <input placeholder="Найти или создать тег" type="text" class="reon-msgctrl__find_tag" autocomplete="off" id="reon-reon-msgctrl_find_tag{{id}}" data-id="{{id}}">
+        <div class="reon-msgctrl__tag_list" id="reon-msgctrl__tag_list{{id}}" data-current-list="deal">
+            {% for item in all_tags %}
+            <div class="reon-msgctrl__add_tag_row">
+                <div class="reon-msgctrl__tag" data-tag-id={{item.id}} {% if item.color %} style="background:#{{item.color}}" {% else %} style="background: white;" {% endif %}>
+                    <span>{{item.name}}</span>
+                </div>
+                <svg class="reon-msgctrl__add_tag_button" width="15px" height="15px" background:"green"><use xlink:href="#digital_pipeline--add_trigger"></use></svg>
+            </div>
+            {% endfor %}
+
+        </div>
+        <div class="reon__create_tag_block" style="display: none;" data-is-new=""> 
+            <div class="reon__create_tag" title="создать тег">
+            <svg class="svg-icon svg-common--arrow-left-cornered-dims tags-lib__item-arrow-icon"><use xlink:href="#common--arrow-left-cornered"></use></svg>
+                <span style="margin-left: 10px;"> Cоздать тег:&nbsp; </span>
+                <span class="reon__new-tag"> </span>
+            </div>
+            <p style="color:red;">По Вашему запросу тегов не найдено </p>
+        </div>
+    </div>
+
+</div>   
+
+<style>
+
+    .reon__delete_tag:hover {
+        cursor: pointer;
+    }
+
+    .reon-msgctrl__tag_select_wrapper{
+        font-family: "PT Sans", sans-serif;
+        font-size: 14px;
+        font-style: normal; 
+        font-weight: normal;
+    }
+
+    .reon-msgctrl__tag_select_wrapper p, span, input, textarea {
+        color: #313942;
+        outline: none !important;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .reon-msgctrl__tag {
+        height: 26px;
+        font-size: 14px;
+        width: auto;
+        border: 1px solid #dbdedf;
+        border-radius: 3px;
+        box-sizing: border-box;
+        padding: 3px 4px;
+        margin: 3px 3px 3px 0;
+    }
+
+    .reon-msgctrl__open_tag_select {
+        box-sizing:border-box;
+        padding: 10px;
+        border: 1px #dbdedf solid;
+        border-radius: 3px;
+        background: #fcfcfc;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        
+    }
+
+    .reon-msgctrl__selected_tags {
+        width: 280px;
+        flex-wrap:wrap;
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .reon-msgctrl__tag_wrapper {
+        margin-right: 10px;
+        display: flex;
+        align-items: center
+
+    }
+
+    .reon-msgctrl__svg_wrapper {
+        height: 21px;
+    }
+
+    .reon-msgctrl__tag_select_block{
+        background: white;
+        z-index: 1000;
+        margin-top: 20px;
+        position: absolute;
+        border: 1px solid #dbdedf;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 468px;
+        box-shadow: 0 14px 24px 1px rgb(0 0 0 / 10%);
+        max-height: 580px;
+        box-sizing: border-box;
+        padding: 30px;
+        right:0;
+    }
+
+    .reon-msgctrl__tag_select_block_title {
+        font-size: 18px;
+        color: #313942;
+        margin-bottom: 18px;
+    }
+
+    .reon-msgctrl__add_tag_row{
+        margin-bottom: 10px;
+
+        display: flex;
+        align-items: center;
+
+    }
+
+    .reon-msgctrl__add_tag_row .reon-msgctrl__add_tag_button {
+        visibility: hidden;
+    }
+    
+    .reon-msgctrl__add_tag_row:hover .reon-msgctrl__add_tag_button {
+        visibility: visible;
+    }
+
+    .reon-msgctrl__add_tag_button:hover {
+        cursor: pointer;
+    }
+     
+
+    .reon-msgctrl__find_tag{
+        height: 30px;
+        box-sizing: border-box;
+        padding: 5px 7px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        width: 100%;
+        margin-bottom: 18px;
+    }
+
+    .reon-msgctrl__tag_list {
+        width: 100%;
+        overflow-y: auto;
+    }
+
+    .reon-msgctrl__tag_list::-webkit-scrollbar {
+    width: 7px;
+    height: 0;
+    }
+
+    .reon-msgctrl__tag_list::-webkit-scrollbar-thumb {
+        border-radius: 3px;
+        background: #cdcdcd;
+    }
+
+    .reon-msgctrl__tag_list::-webkit-scrollbar-track {
+    background: #eaeaea;
+    }
+
+    .reon__create_tag {
+        margin: 10px 0px;
+        height: 36px;
+        width: fit-content;
+        cursor: pointer;
+        background: #ddd;
+        padding: 4px 6px;
+        border: 1px solid #dbdedf;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+
+    }
+
+    .reon__new-tag{
+        height: 26px;
+        background: white;
+        border-radius: 3px;
+        box-sizing: border-box;
+        font-size: 14px;
+        padding: 3px 4px;
+        margin: 3px;
+    }
+
+    .reon__close_select_tag {
+        position: absolute;
+        top: 15px;
+        right: 15px;     
+    }
+
+    .reon__close_select_tag:hover{
+        cursor: pointer;
+    }
+
+</style> 

@@ -1,0 +1,136 @@
+
+
+
+{% if id is empty %}
+    {% set id="" %}
+{% else %}
+{% set id = "_" ~ id %}
+{% endif %}
+
+
+
+
+<div class="reon-msgctrl__select_manager_wraper" id="reon-msgctrl__select_user_wraper{{id}}">
+        {% if selected %}
+            <div class="reon-msgctrl__user_field " 
+                id="reon-msgctrl__manager{{id}}"
+                data-id="{{id}}"
+                data-manager-id="{{selected.id}}"
+                data-current-manager-id="{{selected.id}}"
+                data-current-manager-name="{{selected.option}}">
+                {{selected.option}}
+            </div>
+
+        {% else %}
+        <div class="reon-msgctrl__user_field " 
+            id="reon-msgctrl__manager{{id}}" 
+            data-id="{{id}}"
+            data-manager-id="{{items[0].id}}"
+            data-current-manager-id="{{items[0].id}}"
+            data-current-manager-name="{{items[0].option}}">
+            {{items[0].option}}
+        </div>
+        {% endif %}
+        <div class="reon-msgctrl__user_select_block hidden" id="reon-msgctrl__manager_block{{id}}" data-id="{{id}}">
+            <input type="checkbox" class="reon-msgctrl__select_user_checkbox" name="reon-msgctrl__select_user_checkbox" id="reon-msgctrl__manager_select_checkbox{{id}}" hidden >
+            <input type="text" class="reon-msgctrl__find_user" autocomplete="off" id="reon-reon-msgctrl_find{{id}}" data-id="{{id}}">
+            <div class="reon-msgctrl__user_select_row" id="reon-msgctrl__manager_list{{id}}">
+                {% for item in items %}
+                    <span class="reon_msgctrl__users_list" 
+                        data-manager-id="{{item.id}}"
+                        data-id="{{id}}"
+                        style="background: {{item.bg_color}};"
+                        >{{item.option}}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>    
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=PT+Sans&display=swap');
+body {
+    font-family: "PT Sans", sans-serif;
+    font-size: 15px;
+    font-style: normal; 
+    font-weight: normal;
+}
+
+.reon-msgctrl__select_user_wraper{
+    position: relative;
+}
+
+.reon-msgctrl__user_field {
+    cursor: pointer;
+    position: absolute;
+    z-index: 2;
+}
+
+.reon-msgctrl__user_field_notactiv {
+    color: gray
+}
+
+.reon-msgctrl__user_select_block {
+    position: absolute;
+}
+
+.reon-msgctrl__user_select_block  input {
+    position: relative;
+    background: none;
+    z-index: 3;
+    outline: none !important;
+    border: none !important;
+    border-bottom: 1px blue solid !important;
+    margin-top: -1px;
+    font-family: "PT Sans", sans-serif;
+    font-size: 15px;
+    font-style: normal; 
+    font-weight: normal;
+}
+.reon-msgctrl__user_select_block  textarea {
+    position: relative;
+    background: none;
+    z-index: 3;
+    outline: none !important;
+    border: none !important;
+    border-bottom: 1px blue solid !important;
+    margin-top: -1px;
+    font-family: "PT Sans", sans-serif;
+    font-size: 15px;
+    font-style: normal; 
+    font-weight: normal;
+}
+
+.reon_msgctrl__users_list {
+    height: 35px;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    background: white;
+}
+
+.reon_msgctrl__users_list:hover {
+    background: #DDDDDD;
+    cursor: pointer;
+}
+
+.reon-msgctrl__user_select_row {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    min-width: 250px;
+    border: 1px #e8e8e8 solid;
+    border-radius: 3px !important;
+    box-shadow: 0 14px 24px 1px rgb(0 0 0 / 10%);
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+.hidden {
+    display: none;
+}
+</style>
+
+
+
