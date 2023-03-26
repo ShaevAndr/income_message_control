@@ -13,9 +13,9 @@
             <div class="reon-msgctrl__tag" data-tag-id={{item.id}} {% if item.color %} style="background:{{item.color}}" {% else %} style="background:rgba(56,82,93,.5);" {% endif %}>
                 <span>{{item.name}}</span>   
             </div>
-                <svg class="svg-icon svg-common--trash-dims reon__delete_tag">
-                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#common--trash"></use>
-                </svg>
+            <svg data-delete-tag="true" class="svg-icon svg-common--trash-dims reon__delete_tag">
+                <use data-delete-tag="true" class="reon__delete_tag" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#common--trash"></use>
+            </svg>
         </div>
         {% endfor %}
             {% include "/templates/target_select.twig" with {
@@ -46,10 +46,11 @@
         <div class="reon-msgctrl__tag_list" id="reon-msgctrl__tag_list{{id}}" data-current-list="deal">
             {% for item in all_tags %}
             <div class="reon-msgctrl__add_tag_row">
-                <div class="reon-msgctrl__tag" data-tag-id={{item.id}} {% if item.color %} style="background:#{{item.color}}" {% else %} style="background: white;" {% endif %}>
+                <div class="reon-msgctrl__tag" data-add-tag="true" data-tag-id={{item.id}} {% if item.color %} style="background:#{{item.color}}" {% else %} style="background: white;" {% endif %}>
                     <span>{{item.name}}</span>
                 </div>
-                <svg class="reon-msgctrl__add_tag_button" width="15px" height="15px" background:"green"><use xlink:href="#digital_pipeline--add_trigger"></use></svg>
+                <svg class="reon-msgctrl__add_tag_button" width="15px" height="15px" data-add-tag="true"><use xlink:href="#digital_pipeline--add_trigger" data-add-tag="true"></use></svg>
+                <div class="reon-msgctrl__add_tag_wrapper"></div>
             </div>
             {% endfor %}
 
@@ -156,8 +157,9 @@
     }
 
     .reon-msgctrl__add_tag_row{
+        position:relative;
         margin-bottom: 10px;
-
+        width: fit-content;
         display: flex;
         align-items: center;
 
@@ -171,7 +173,12 @@
         visibility: visible;
     }
 
-    .reon-msgctrl__add_tag_button:hover {
+    .reon-msgctrl__add_tag_wrapper{
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        background: green;
+        opacity: 0;
         cursor: pointer;
     }
      

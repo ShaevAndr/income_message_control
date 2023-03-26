@@ -34,7 +34,7 @@
         <div class="reon-msgctrl__user_select_block hidden" id="reon-msgctrl__manager_block{{id}}" data-id="{{id}}">
             <input type="checkbox" class="reon-msgctrl__select_user_checkbox" name="reon-msgctrl__select_user_checkbox" id="reon-msgctrl__manager_select_checkbox{{id}}" hidden >
             <input type="text" class="reon-msgctrl__find_user" autocomplete="off" id="reon-reon-msgctrl_find{{id}}" data-id="{{id}}">
-            <div class="reon-msgctrl__user_select_row" id="reon-msgctrl__manager_list{{id}}">
+            <div class="reon-msgctrl__user_select_row  custom-scroll" id="reon-msgctrl__manager_list{{id}}">
                 {% for item in items %}
                     <span class="reon_msgctrl__users_list" 
                         data-manager-id="{{item.id}}"
@@ -116,8 +116,10 @@ body {
 
 .reon-msgctrl__user_select_row {
     position: relative;
+    z-index: 1000;
     display: flex;
     flex-direction: column;
+    max-height: 600px;
     margin-top: 10px;
     min-width: 250px;
     border: 1px #e8e8e8 solid;
@@ -126,6 +128,7 @@ body {
     overflow: hidden;
     overflow-y: auto;
 }
+
 
 .hidden {
     display: none;

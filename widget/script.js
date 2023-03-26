@@ -279,7 +279,7 @@ define(['jquery', 'underscore', 'twigjs', './modules/settingsREON/settings-reon.
 						<span>${title}</span>   
 					</div>
 					<svg class="svg-icon svg-common--trash-dims reon__delete_tag">
-                    	<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#common--trash"></use>
+                    	<use class="reon__delete_tag" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#common--trash"></use>
                 	</svg>
 				</div>`
 	}
@@ -287,11 +287,12 @@ define(['jquery', 'underscore', 'twigjs', './modules/settingsREON/settings-reon.
 	const tag_in_list = (name, id="", color="") => {
 
 		return `<div class="reon-msgctrl__add_tag_row">
-		<div class="reon-msgctrl__tag" data-tag-id=${id} style="background:${color}">
-			<span>${name}</span>
-		</div>
-		<svg class="reon-msgctrl__add_tag_button" width="15px" height="15px"><use xlink:href="#digital_pipeline--add_trigger"></use></svg>
-	</div>`
+			<div class="reon-msgctrl__tag" data-tag-id=${id} style="background:${color}">
+				<span>${name}</span>
+			</div>
+			<svg class="reon-msgctrl__add_tag_button" width="15px" height="15px"><use xlink:href="#digital_pipeline--add_trigger"></use></svg>
+			<div class="reon-msgctrl__add_tag_wrapper"></div>
+		</div>`
 	}
 
 	const refresh_tag_list = (element) => {
@@ -476,8 +477,29 @@ define(['jquery', 'underscore', 'twigjs', './modules/settingsREON/settings-reon.
 		return schedule
 	}
 
+	
 	document.addEventListener('click', async event=>{
+		const select_tag_checkboxes = document.querySelectorAll('.reon-msgctrl__tag_select_checkbox')
+		const select_manager_checkboxes = document.querySelectorAll('.reon-msgctrl__select_user_checkbox')
 // schedule
+
+		select_tag_checkboxes.forEach(checkbox=>{
+			if (checkbox.checked) {
+
+				let select_tag_block = checkbox.parentNode.querySelector('.reon-msgctrl__tag_select_block')
+				let target = event.target;
+
+				const is_tag_click = select_tag_block.contains(target);
+				if (!is_tag_click  && select_tag_block.style.display==="flex") {
+					select_tag_block.style.display = "none"
+					checkbox.checked = false
+					const open_select_button = checkbox.parentNode.querySelector(".reon-msgctrl__open_tag_select")
+					open_select_button.style.display = "flex"
+
+				}
+			}
+			})
+
 		if (event.target.classList.contains("reon_save_schedule_button")) {
 			if (event.target.dataset.active === "N") {
 				return
@@ -552,8 +574,10 @@ define(['jquery', 'underscore', 'twigjs', './modules/settingsREON/settings-reon.
 		}
 
 		if (event.target.classList.contains("reon-msgctrl__open_tag_select")) {
+
 			const parentBlock = event.target.parentNode
-			parentBlock.querySelector("[type=checkbox]").checked = true
+			const isOpen = parentBlock.querySelector("[type=checkbox]")
+			isOpen.checked = true
 			parentBlock.querySelector(".reon-msgctrl__tag_select_block").style.display = "flex"
 			event.target.style.display = "none"
 		}
@@ -567,10 +591,10 @@ define(['jquery', 'underscore', 'twigjs', './modules/settingsREON/settings-reon.
 	
 		}
 	
-		if (event.target.classList.contains("reon-msgctrl__add_tag_button")) {
+		if (event.target.classList.contains("reon-msgctrl__add_tag_wrapper")) {
 			const parentBlock = event.target.closest(".reon-msgctrl__tag_select_wrapper")
 			const selected_tags_block = parentBlock.querySelector(".reon-msgctrl__selected_tags")
-			const selected_tag = event.target.previousElementSibling
+			const selected_tag = event.target.parentNode.firstElementChild
 			const selected_tags = selected_tags_block.querySelectorAll('.reon-msgctrl__tag')
 			for (element of selected_tags.values()) {
 			if (selected_tag.dataset.tagId === element.dataset.tagId){
@@ -581,7 +605,7 @@ define(['jquery', 'underscore', 'twigjs', './modules/settingsREON/settings-reon.
 		}
 	
 		if (event.target.classList.contains("reon__delete_tag")) {
-			const element = event.target.parentNode
+			const element = event.target.closest(".reon-msgctrl__tag_wrapper")
 			element.remove()
 		}
 
@@ -600,7 +624,7 @@ define(['jquery', 'underscore', 'twigjs', './modules/settingsREON/settings-reon.
 			manager_name.classList.remove("reon-msgctrl__user_field_notactiv")
 		}
 
-		const select_manager_checkboxes = document.querySelectorAll('.reon-msgctrl__select_user_checkbox')
+
 		select_manager_checkboxes.forEach(checkbox=>{
 			if (checkbox.checked) {
 				let select_manager_block = checkbox.parentNode
@@ -619,6 +643,9 @@ define(['jquery', 'underscore', 'twigjs', './modules/settingsREON/settings-reon.
 				}
 			}
 			})
+		
+		
+		
 
 		if (event.target.classList.contains("reon-msgctrl__user_field")) {
 			const id = event.target.dataset.id
@@ -731,17 +758,7 @@ define(['jquery', 'underscore', 'twigjs', './modules/settingsREON/settings-reon.
 	})
 	
 
-	document.addEventListener("mouseenter", (event)=>{
-		if (event.target == document){
-			return
-		}
-		if (event.target.classList.contains("reon_msgctrl__users_list")){
-			const id = event.target.dataset.id
-			const manager_name = document.querySelector(`#reon-msgctrl__manager${id}`)
-			manager_name.innerText = event.target.innerText
-		}
-	})
-
+	
 
 	self.render({
         href: '/templates/control_settings.twig', //путь до шаблона
@@ -896,7 +913,20 @@ define(['jquery', 'underscore', 'twigjs', './modules/settingsREON/settings-reon.
 		is_visible ? element.slideDown(500) : element.slideUp(500)
 	}
 		
+	$work_area.on("mouseover", async (event)=>{
+		
+			if (event.target.classList.contains("reon_msgctrl__users_list")){
+				const id = event.target.dataset.id
+				const manager_name = document.querySelector(`#reon-msgctrl__manager${id}`)
+				manager_name.innerText = event.target.innerText
+			}
+		})
+	
+	
 	$work_area.on("click", async (event)=>{
+		if(event.target.id === 'reon-cancel_delete' ){
+			document.querySelector('#reon-delete_task').style.display = "none"
+		}
 		
 		if (event.target.id === "save_control_setting" || event.target.id === "save_control_setting_span") {
 			const data = get_new_condition(tasks)
@@ -961,11 +991,22 @@ define(['jquery', 'underscore', 'twigjs', './modules/settingsREON/settings-reon.
 		// Удаляет действие
 		if (event.target.dataset.action == "delete") {
 			const row_id = event.target.dataset.id
+			const modal = document.querySelector('#reon-delete_task')
+			modal.dataset.id = row_id
+			modal.style.display = "block"
+			
+		}
+
+		if(event.target.id === 'reon-delete_condition') {
+			const modal = document.querySelector('#reon-delete_task')
+			const row_id = modal.dataset.id
 			send_changes("DELETE", row_id)
 			.then(()=>$(`#view_row_${row_id}`).hide())
 			.catch(()=>{console.debug("сервер не отвечает")})
-			
+			modal.dataset.id = ""
+			modal.style.display = "none"
 		}
+
 		// Сохраняет действие
 		if (event.target.dataset.action == "save") {
 			const row_id = event.target.dataset.id

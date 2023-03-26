@@ -12,7 +12,7 @@
             "email": "reon.helpdesk@gmail.com"
         }
     }, 
-    "locations": ["settings", "advanced_settings"], 
+    "locations": ["everywhere"], 
     "tour": 
         {
         "is_tour": true,

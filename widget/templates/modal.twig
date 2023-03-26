@@ -1,0 +1,98 @@
+<div class="reon_modal" id="reon-delete_task" data-id='' aria-hidden="true" style="display:none;">
+    <div class="reon-modal__wrap">
+        <div class="reon-modal_background"></div>
+        <div class="reon-modal__window" role="dialog" aria-modal="true" >
+            <h2>Вы действительно хотите удалить условие?</h2>
+            <div class="reon-modal-buttons">
+                <div class="reon-modal_button" id="reon-delete_condition">
+                    Удалить
+                </div>
+                <div class="reon-modal_button" id="reon-cancel_delete">
+                    Отменить
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+
+.reon-modal_background{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    background: #c5ccd4;
+    opacity: 0.3;
+    overflow: hidden;
+    z-index: 1001;
+}
+
+.reon-modal__wrap {
+    flex-shrink: 0;
+    flex-grow: 0;
+    height: 100%;
+    margin: auto;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.reon-modal__window {
+    position: fixed;
+    top: 35%;
+    margin: 50px 0;
+    background: #fff;
+    width: 600px;
+    max-width: 100%;
+    overflow: hidden;
+    border: 1px solid #dbdedf;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 14px 24px 1px rgb(0 0 0 / 10%);
+    z-index: 1002;
+}
+
+.reon-modal__window h2{
+    font: inherit;
+    color:#313942;
+}
+
+.reon-modal-buttons{
+    margin-top: 20px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px;
+}
+
+.reon-modal_button {
+    display:flex;
+    box-sizing: border-box;
+    font: inherit;
+    font-weight: 700;
+    align-items: center;
+    justify-content: center;
+    width: 106px;
+    height: 34px;
+    padding: 10px;
+    margin: 10px;
+    color: #2e3640;
+    border: 1px solid #dbdedf;
+    border-radius: 3px;
+}
+
+#reon-delete_condition{
+    background: #ff7070;
+}
+
+#reon-cancel_delete{
+    color: rgb(182,189,201);
+    background: #fcfcfc;
+}
+</style>
