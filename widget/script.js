@@ -957,7 +957,7 @@ define(['jquery', 'underscore', 'twigjs', './modules/settingsREON/settings-reon.
 					load: (template)=>{
 						const new_chunk = template.render({
 							managers_with_groups: managers_with_group,
-							tags: tags,
+							tags: tags.deals_tags,
 							managers_with_responsible: managers_with_responsible,
 							managers: managers,
 							tasks: tasks

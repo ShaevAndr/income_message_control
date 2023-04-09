@@ -2,7 +2,7 @@
     {"name": "widget.name",
     "description": "widget.description", 
     "short_description": "widget.short_description", 
-    "version": "3.1.1", "interface_version": 2, 
+    "version": "5.1.1", "interface_version": 2, 
     "init_once": "Y", 
     "locale": ["ru"], 
     "installation": true, 
@@ -12,7 +12,7 @@
             "email": "reon.helpdesk@gmail.com"
         }
     }, 
-    "locations": ["everywhere"], 
+    "locations": ["everywhere", "settings", "advanced_settings"], 
     "tour": 
         {
         "is_tour": true,
