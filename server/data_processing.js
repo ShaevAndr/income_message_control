@@ -59,7 +59,8 @@ const init = async () => {
         first_message = null
         return
     }
-    first_message = early_message
+    first_message =  JSON.parse(JSON.stringify(early_message))
+    timer && clearTimeout(timer)
     set_message_timer(early_message)    
 }
 
@@ -71,24 +72,18 @@ const add_message_to_db = async (actions, message) => {
     if (!is_work_time) {
         second_to_work = schedule_processiung.time_to_start_work(actions.schedule, message.created_at, actions.timezone)
     }
-    if (!second_to_work) {
-        return Promise.resolve()
-    }
     message.action_time = (Number(message.updated_at) + Number(actions.delay_time) * 60 + second_to_work) * 1000
     message.actions = actions
     message._id = String(Date.now()) + String(Math.floor(Math.random() * 100))
     const result = await DB.add_message(message)
-    .then((data)=>{
-        if (!first_message || message.action_time < first_message.action_time) {
-            if (timer) {
-                clearTimeout(timer)
-                first_message = message
-            }
-            set_message_timer(message)
-        }
-        return data
-
-    })    
+    if (!first_message || message.action_time < first_message.action_time) {
+        init()
+        // if (timer) {
+        //     clearTimeout(timer)
+        // }
+        first_message = JSON.parse(JSON.stringify(message))
+        // set_message_timer(message)
+    }
     return result 
 }
 
@@ -120,96 +115,107 @@ const message_processing = async (message) => {
         return
     }
     for (action of actions) {
+
         const result = await add_message_to_db(action, message)
+        console.log(result)
     }
 }
 
 const realize_actions = async (message) =>{
-    const have_answer = await message_have_answer(message.talk_id, message.subdomain)
-    if (have_answer) {
-        await delete_talk(message.talk_id, message.subdomain)
+    try{
+        const have_answer = await message_have_answer(message.talk_id, message.subdomain)
+        if (have_answer) {
+            await delete_talk(message.talk_id, message.subdomain)
+            first_message = null
+            init()
+            return
+        }
+        const api = new Api(message.subdomain)
+
+        if (message.actions.task){
+            let responsible_for_leads =  Number(message.actions.task.responsible.id)
+            if (responsible_for_leads === -1) {
+                responsible_for_leads = message.responsible_id
+            }
+            await api.createTasks([{
+                "entity_id":message.lead_id,
+                "entity_type": "leads",
+                "task_type_id": message.actions.task.type.id,
+                "responsible_user_id": responsible_for_leads,
+                "text": message.actions.task.text,
+                "complete_till":convert_task_date(message.actions.task.date, message.actions.timezone)
+            }])
+            
+        }
+        if (message.actions.new_responsible){
+            await api.updateDeals({
+                "id":message.lead_id,
+                "responsible_user_id": Number(message.actions.new_responsible.id)
+            })
+        }
+        if (message.actions.tags){
+            let tags = message.actions.tags.map(tag=>{return{"name":tag.name}})
+            const lead = await api.getDeal(message.lead_id)
+            let lead_tags, company_tags, contact_tags
+            
+            
+            if (lead._embedded.tags.length) {
+                lead_tags = lead._embedded.tags.map(tag=>{return {name: tag.name}})
+            }
+            await api.updateDeals({
+                "id":message.lead_id,
+                "_embedded": {
+                    "tags": [...tags, ...lead_tags || []]
+                }
+            })
+
+            if(message.actions.tag_on_contact) {
+                const contact = await api.getContact(Number(message.contact_id))
+                if (contact._embedded.tags.length) {
+                    contact_tags = contact._embedded.tags.map(tag=>{return {name: tag.name}})
+                }
+                await api.updateContacts({
+                    "id":Number(message.contact_id),
+                    "_embedded": {
+                        "tags": [...contact_tags || [], ...tags]
+                    }
+                })
+            }
+            if(message.actions.tag_on_company && message.company) {
+                const company = await api.getCompany(Number(message.company))
+                if (company._embedded.tags.length) {
+                    company_tags = company._embedded.tags.map(tag=>{return {name: tag.name}})
+                }
+                await api.updateCompany({
+                    "id":Number(message.company),
+                    "_embedded": {
+                        "tags": [...company_tags || [], ...tags]
+                    }
+                })
+            }
+        }
+        if (message.actions.notice){
+
+            if (users[message.responsible_id]){
+                users[message.responsible_id].write("event: notification\n")
+                users[message.responsible_id].write(`data:${message.actions.notice} \n\n`)
+                users[message.responsible_id].end()
+            }
+        }
+    } catch (error) {
+        console.log(`Ошибка при реализации условия${message.responsible_id}`)
+        console.log(error)
+    } finally {
+        await DB.delete_message({"_id":message._id})
+        first_message = null
         init()
-        return
     }
-    const api = new Api(message.subdomain)
 
-    if (message.actions.task){
-        let responsible_for_leads =  Number(message.actions.task.responsible.id)
-        if (responsible_for_leads === -1) {
-            responsible_for_leads = message.responsible_id
-        }
-        await api.createTasks([{
-            "entity_id":message.lead_id,
-            "entity_type": "leads",
-            "task_type_id": message.actions.task.type.id,
-            "responsible_user_id": responsible_for_leads,
-            "text": message.actions.task.text,
-            "complete_till":convert_task_date(message.actions.task.date, message.actions.timezone)
-        }]).catch(err=>{console.log(err.response.data)})
-        
-    }
-    if (message.actions.new_responsible){
-        await api.updateDeals({
-            "id":message.lead_id,
-            "responsible_user_id": Number(message.actions.new_responsible.id)
-        }).catch(err=>{console.log(err.response.data)})
-    }
-    if (message.actions.tags){
-        let tags = message.actions.tags.map(tag=>{return{"name":tag.name}})
-        const lead = await api.getDeal(message.lead_id)
-        let lead_tags, company_tags, contact_tags
-        
-        
-        if (lead._embedded.tags.length) {
-            lead_tags = lead._embedded.tags.map(tag=>{return {name: tag.name}})
-        }
-        await api.updateDeals({
-            "id":message.lead_id,
-            "_embedded": {
-                "tags": [...tags, ...lead_tags || []]
-            }
-        }).catch(err=>{console.log(err.response.data)})
-
-        if(message.actions.tag_on_contact) {
-            const contact = await api.getContact(Number(message.contact_id))
-            if (contact._embedded.tags.length) {
-                contact_tags = contact._embedded.tags.map(tag=>{return {name: tag.name}})
-            }
-            await api.updateContacts({
-                "id":Number(message.contact_id),
-                "_embedded": {
-                    "tags": [...contact_tags || [], ...tags]
-                }
-            }).catch(err=>{console.log(err.response.data)})
-        }
-        if(message.actions.tag_on_company && message.company) {
-            const company = await api.getCompany(Number(message.company))
-            if (company._embedded.tags.length) {
-                company_tags = company._embedded.tags.map(tag=>{return {name: tag.name}})
-            }
-            await api.updateCompany({
-                "id":Number(message.company),
-                "_embedded": {
-                    "tags": [...company_tags || [], ...tags]
-                }
-            }).catch(err=>{console.log(err.response.data)})
-        }
-    }
-    if (message.actions.notice){
-
-        if (users[message.responsible_id]){
-            users[message.responsible_id].write("event: notification\n")
-            users[message.responsible_id].write(`data:${message.actions.notice} \n\n`)
-            users[message.responsible_id].end()
-        }
-    }
-    await DB.delete_message({"_id":message._id})
-    init()
 }
 
 // Удаляет сообщение в чате, если оно прочитанно
-const delete_talk = (talk_id, subdomain) =>{
-    DB.delete_message({"talk_id":String(talk_id), "subdomain":subdomain})
+const delete_talk = async (talk_id, subdomain) =>{
+    await DB.delete_message({"talk_id":String(talk_id), "subdomain":subdomain})
     .then(()=>{
         if (!first_message) {
             return
@@ -224,6 +230,19 @@ const delete_talk = (talk_id, subdomain) =>{
 
 }
 
+const delete_condition = async (subdomain, changes) => {
+    try{
+        await DB.delete_message({"actions._id": String(changes)})
+        await DB.delete_action(subdomain, changes)
+        init()
+        console.log("seccess deleting")
+        return Promise.resolve()
+    } catch {
+        console.log("error on delete")
+        return Promise.reject()}
+
+}
+
 const add_client = (client) => {
     users[client.id] = client.res
 }
@@ -232,5 +251,6 @@ module.exports = {
     message_processing,
     init, 
     delete_talk,
-    add_client
+    add_client,
+    delete_condition
 }

@@ -20,11 +20,16 @@ const is_work_time = (schedule, message_create, tz) => {
 
 const time_to_start_work = (schedule, message_create, tz) => {
     const message_was_recieved = moment.unix(message_create).tz(tz)
+    let is_evening = false
     for (let i=0; i<7; i++) {
         const temp_day = message_was_recieved.clone().add(i, "day")
         for (day of schedule) {
             if (day.day === temp_day.format("dddd")) { 
                 if (!day.checked) {break}
+                if (!is_evening && message_was_recieved.format("HH:mm")>day.to) {
+                    is_evening = true
+                    break
+                }
                 const [hour_from, minute_from ]= day.from.split(":")
                 temp_day.set('hour', hour_from)
                 temp_day.set('minute', minute_from)

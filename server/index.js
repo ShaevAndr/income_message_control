@@ -29,7 +29,7 @@ app.post("/informer", (req, res)=>{
 // удаляет действие
 app.delete('/data_change', (req, res) => {
     const {subdomain, changes} = req.body
-    DB.delete_action(subdomain, changes)
+    data_processing.delete_condition(subdomain, changes)
     .then(()=>res.json({send:"ok"}))
     .catch(()=>res.sendStatus(400))
 })
@@ -67,17 +67,17 @@ app.post("/get_actions", (req, res) => {
 }) 
 
 app.post("/new_message", async (req, res)=>{
-    console.log("new_message")
-
+    console.log("new_message");
+    const logger = getUserLogger("Messages");
     try{        
         const {chat_id, talk_id, created_at, contact_id, updated_at} = req.body.message.add[0],
         {subdomain, id} = req.body.account;
-
+        
         const searchingUser = await DB.get_account_by_subdomain(subdomain)
         const isSubscribe = searchingUser.finishUsingDate - Date.now();
         // if (isSubscribe<0) {
-        //         return res.sendStatus(200)
-        // }
+            //         return res.sendStatus(200)
+            // }
         const api = new Api(subdomain)
         let message = {chat_id,
             talk_id,
@@ -85,9 +85,10 @@ app.post("/new_message", async (req, res)=>{
             contact_id,
             subdomain,
             account_id: id}
-        const talk = await api.getTalk(talk_id)
-        const lead_id = talk._embedded["leads"][0]["id"]
-        const lead = await api.getDeal(lead_id)
+            const talk = await api.getTalk(talk_id)
+            const lead_id = talk.entity_id
+            const lead = await api.getDeal(lead_id);
+        logger.debug(`Сообщение. Субдомен:${subdomain}, created_at: ${created_at}`)
         if (lead._embedded.companies.length) {
             message.company = lead._embedded.companies[0].id
         }
@@ -100,7 +101,8 @@ app.post("/new_message", async (req, res)=>{
         res.sendStatus(200)
     } catch {
         (err) => {
-            console.log(err)
+            const logger = getUserLogger("Errors");
+            logger.debug("Ошибка при получении сообщения", err)
             res.sendStatus(200)
         }
         // logger.error(`Новое сообщение не обработанно. Talk_id: ${talk_id}`)
